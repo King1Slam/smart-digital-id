@@ -1,41 +1,51 @@
+// src/routes/AppRoutes.jsx
 import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "../components/Auth/Login.jsx";
-import Register from "../components/Auth/Register.jsx";
+import NRCRegister from "../components/Auth/NRCRegister.jsx";
 import Home from "../components/Dashboard/Home.jsx";
-import SmartAssistant from "../components/Assistant/SmartAssistant.jsx";
-import SectorViewer from "../components/Dashboard/SectorViewer.jsx";
-import { useAuth } from "../context/AuthContext.jsx";
-import Sidebar from "../components/Layout/Sidebar.jsx";
-
-function Layout({ children }) {
-  return (
-    <div className="flex">
-      <Sidebar />
-      <div className="flex-1 p-4">{children}</div>
-    </div>
-  );
-}
+import SmartIDBot from "../components/Assistant/SmartIDBot.jsx";
+import DocumentUpload from "../components/ID/DocumentUpload.jsx";
+import VoiceInput from "../components/Voice/VoiceInput.jsx";
+import Profile from "../components/Dashboard/Profile.jsx";
+import { useAuth } from "../hooks/useAuth";
+import ForgotPassword from "../components/Auth/ForgotPassword.jsx";
+import AccountRegister from "../components/Auth/AccountRegister.jsx";
 
 export default function AppRoutes() {
   const { user } = useAuth();
 
   return (
     <Routes>
+      {/* Public routes */}
       <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+      <Route path="/register-nrc" element={<NRCRegister />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/account-register" element={<AccountRegister />} />
+
+      {/* Protected routes */}
       <Route
         path="/dashboard"
-        element={user ? <Layout><Home /></Layout> : <Navigate to="/login" />}
+        element={user ? <Home /> : <Navigate to="/login" replace />}
       />
       <Route
         path="/assistant"
-        element={user ? <Layout><SmartAssistant /></Layout> : <Navigate to="/login" />}
+        element={user ? <SmartIDBot /> : <Navigate to="/login" replace />}
       />
       <Route
-        path="/sectors"
-        element={user ? <Layout><SectorViewer /></Layout> : <Navigate to="/login" />}
+        path="/upload"
+        element={user ? <DocumentUpload /> : <Navigate to="/login" replace />}
       />
-      <Route path="*" element={<Navigate to="/dashboard" />} />
+      <Route
+        path="/voice"
+        element={user ? <VoiceInput /> : <Navigate to="/login" replace />}
+      />
+      <Route
+        path="/profile"
+        element={user ? <Profile /> : <Navigate to="/login" replace />}
+      />
+
+      {/* Redirect unknown routes */}
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );
 }
